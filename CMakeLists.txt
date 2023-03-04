@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project("ArbitraryPrecisionInteger")
 
 option(API_ENABLE_UNIT_TESTS "Enable unit tests" ON)
+option(API_ENABLE_PERFORMANCE_TESTS "Enable performance tests" ON)
 
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
@@ -55,4 +56,8 @@ if (API_ENABLE_UNIT_TESTS)
     add_executable(unittests ${UNITTESTFILES})
     target_link_libraries(unittests gtest_main)
     target_link_libraries(unittests ArbitraryPrecisionInteger)
+endif ()
+
+if (API_ENABLE_PERFORMANCE_TESTS)
+    add_subdirectory(performance_tests)
 endif ()

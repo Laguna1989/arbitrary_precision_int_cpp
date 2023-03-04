@@ -114,10 +114,12 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
 api::API api::operator*(api::API const& lhs, api::API const& rhs)
 {
     std::vector<std::uint8_t> result;
+    
+    auto const [shorter, longer] = order_vectors(lhs.get_data(), rhs.get_data());
 
-    std::vector<std::uint8_t> tmp = lhs.get_data();
-    for (auto i = 0u; i != rhs.get_data().size(); ++i) {
-        for (auto j = 0u; j != rhs.get_data().at(i); ++j) {
+    std::vector<std::uint8_t> tmp = *longer;
+    for (auto i = 0u; i != shorter->size(); ++i) {
+        for (auto j = 0u; j != shorter->at(i); ++j) {
             result = (api::API { result } + api::API { tmp }).get_data();
         }
         tmp.insert(tmp.begin(), 0u); // effectively shifting all bytes one place to the right.
