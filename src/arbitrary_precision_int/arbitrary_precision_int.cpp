@@ -80,12 +80,12 @@ api::API api::operator+(api::API const& lhs, api::API const& rhs)
 
 api::API api::operator-(api::API const& lhs, api::API const& rhs)
 {
-    if (rhs == api::from_int(0u)) {
+    if (rhs == api::from_uint64(0u)) {
         return lhs;
     }
     auto const compare_result = api::compare(lhs, rhs);
     if (compare_result == -1) {
-        return api::from_int(0u);
+        return api::from_uint64(0u);
     }
     auto const new_size = (lhs.get_data().size() > rhs.get_data().size() ? lhs.get_data().size()
                                                                          : rhs.get_data().size());
@@ -127,15 +127,15 @@ api::API api::operator*(api::API const& lhs, api::API const& rhs)
 
 api::API api::operator/(api::API const& lhs, api::API const& rhs)
 {
-    if (rhs == api::from_int(0)) {
-        return api::from_int(0);
+    if (rhs == api::from_uint64(0)) {
+        return api::from_uint64(0);
     }
 
     auto const compare_result = api::compare(lhs, rhs);
     if (compare_result == -1) {
-        return api::from_int(0);
+        return api::from_uint64(0);
     } else if (compare_result == 0) {
-        return api::from_int(1);
+        return api::from_uint64(1);
     }
 
     std::vector<std::uint8_t> q {};
@@ -157,15 +157,15 @@ api::API api::operator/(api::API const& lhs, api::API const& rhs)
 
 api::API api::mod(api::API const& lhs, api::API const& rhs)
 {
-    if (rhs == api::from_int(0)) {
-        return api::from_int(0);
+    if (rhs == api::from_uint64(0)) {
+        return api::from_uint64(0);
     }
 
     auto const compare_result = api::compare(lhs, rhs);
     if (compare_result == -1) {
-        return api::from_int(0);
+        return api::from_uint64(0);
     } else if (compare_result == 0) {
-        return api::from_int(0);
+        return api::from_uint64(0);
     }
 
     std::vector<std::uint8_t> q {};
@@ -186,7 +186,7 @@ api::API api::mod(api::API const& lhs, api::API const& rhs)
     return api::API { r };
 }
 
-api::API api::from_int(std::uint64_t number)
+api::API api::from_uint64(std::uint64_t number)
 {
     std::vector<std::uint8_t> data;
     while (true) {
@@ -232,7 +232,7 @@ int api::compare(api::API const& lhs, api::API const& rhs)
 
 void to_stringstream(api::API const& api, std::stringstream& stream)
 {
-    static api::API const tenAsAPI = api::from_int(10);
+    static api::API const tenAsAPI = api::from_uint64(10);
     if (api::compare(api, tenAsAPI) == -1) {
         stream << api::to_uint64(api);
     } else {

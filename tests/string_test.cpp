@@ -24,6 +24,6 @@ INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntStringTest, ArbitraryPrecisionIntS
         std::make_tuple(std::vector<std::uint8_t>{255}, "255"),
         std::make_tuple(std::vector<std::uint8_t>{0, 1}, "256"),
         std::make_tuple(std::vector<std::uint8_t>{0, 2}, "512"),
-        std::make_tuple(api::from_int(std::numeric_limits<std::uint16_t>::max()).get_data(), std::to_string(std::numeric_limits<std::uint16_t>::max()))
+        std::make_tuple(api::from_uint64(std::numeric_limits<std::uint16_t>::max()).get_data(), std::to_string(std::numeric_limits<std::uint16_t>::max()))
         // clang-format on
         ));

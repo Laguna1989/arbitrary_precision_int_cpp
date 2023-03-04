@@ -49,7 +49,7 @@ class ArbitraryPrecisionIntFromIntTestFixture
 
 TEST_P(ArbitraryPrecisionIntFromIntTestFixture, FromInt)
 {
-    auto const api = api::from_int(std::get<0>(GetParam()));
+    auto const api = api::from_uint64(std::get<0>(GetParam()));
 
     auto const expected_value = std::get<1>(GetParam());
     ASSERT_EQ(api.get_data(), expected_value);
@@ -80,8 +80,8 @@ class ArbitraryPrecisionIntUnEqualTestFixture
     : public ::testing::TestWithParam<std::tuple<std::uint64_t, std::uint64_t>> { };
 TEST_P(ArbitraryPrecisionIntUnEqualTestFixture, Unequal)
 {
-    auto const first = api::from_int(std::get<0>(GetParam()));
-    auto const second = api::from_int(std::get<1>(GetParam()));
+    auto const first = api::from_uint64(std::get<0>(GetParam()));
+    auto const second = api::from_uint64(std::get<1>(GetParam()));
     ASSERT_NE(first, second);
 }
 

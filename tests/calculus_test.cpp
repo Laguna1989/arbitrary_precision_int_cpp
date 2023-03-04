@@ -113,9 +113,9 @@ INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntMulTest, ArbitraryPrecisionIntCalc
         std::make_tuple(std::vector<std::uint8_t> { 2 }, std::vector<std::uint8_t> { 0, 1 }, std::vector<std::uint8_t> { 0, 2 }),
         std::make_tuple(std::vector<std::uint8_t> { 1 }, std::vector<std::uint8_t> { 0, 3 }, std::vector<std::uint8_t> { 0, 3 }),
         std::make_tuple(std::vector<std::uint8_t> { 0, 2 }, std::vector<std::uint8_t> { 0, 3 }, std::vector<std::uint8_t> { 0, 0, 6 }),
-        std::make_tuple(std::vector<std::uint8_t> { 100 }, std::vector<std::uint8_t> { 2 }, api::from_int(100*2).get_data()),
-        std::make_tuple(std::vector<std::uint8_t> { 100 }, std::vector<std::uint8_t> { 3 }, api::from_int(100*3).get_data()),
-        std::make_tuple(api::from_int(1337).get_data(), api::from_int(42).get_data(), api::from_int(1337*42).get_data())
+        std::make_tuple(std::vector<std::uint8_t> { 100 }, std::vector<std::uint8_t> { 2 }, api::from_uint64(100*2).get_data()),
+        std::make_tuple(std::vector<std::uint8_t> { 100 }, std::vector<std::uint8_t> { 3 }, api::from_uint64(100*3).get_data()),
+        std::make_tuple(api::from_uint64(1337).get_data(), api::from_uint64(42).get_data(), api::from_uint64(1337*42).get_data())
         // clang-format on
         ));
 
