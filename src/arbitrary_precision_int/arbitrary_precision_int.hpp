@@ -2,6 +2,7 @@
 #define IMPLEMENTATION_HPP_GUARD
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace api {
@@ -64,6 +65,12 @@ API operator/(API const& lhs, API const& rhs);
 /// \param rhs second arbitrary precision integer
 /// \return modulo of lhs anr rhs. if rhs is 0, the API equivalent of 0 is returned
 API mod(API const& lhs, API const& rhs);
+
+///
+/// \param lhs
+/// \param rhs
+/// \return
+std::pair<API, API> div_mod(API const& lhs, API const& rhs);
 
 /// Comparison of two ArbitraryPrecisionIntegers
 /// \param lhs first arbitrary precision integer

@@ -127,45 +127,27 @@ api::API api::operator*(api::API const& lhs, api::API const& rhs)
 
 api::API api::operator/(api::API const& lhs, api::API const& rhs)
 {
-    if (rhs == api::from_uint64(0)) {
-        return api::from_uint64(0);
-    }
-
-    auto const compare_result = api::compare(lhs, rhs);
-    if (compare_result == -1) {
-        return api::from_uint64(0);
-    } else if (compare_result == 0) {
-        return api::from_uint64(1);
-    }
-
-    std::vector<std::uint8_t> q {};
-    q.resize(lhs.get_data().size());
-    auto r = std::vector<std::uint8_t> {};
-
-    for (auto i = lhs.get_data().size() - 1; i != -1; --i) {
-        r.insert(r.begin(), lhs.get_data()[i]); // effectively shifting all bytes one place to the
-                                                // right. Equals a multiplication by 256
-
-        api::API r_api { r };
-        while (api::compare(rhs, r_api) <= 0) {
-            r_api = r_api - rhs;
-            q.at(i) += 1;
-        }
-    }
-    return api::API { q };
+    auto const [q, _] = api::div_mod(lhs, rhs);
+    return q;
 }
 
 api::API api::mod(api::API const& lhs, api::API const& rhs)
 {
+    auto const [_, r] = api::div_mod(lhs, rhs);
+    return r;
+}
+
+std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& rhs)
+{
     if (rhs == api::from_uint64(0)) {
-        return api::from_uint64(0);
+        return std::make_pair(api::from_uint64(0), api::from_uint64(0));
     }
 
     auto const compare_result = api::compare(lhs, rhs);
     if (compare_result == -1) {
-        return api::from_uint64(0);
+        return std::make_pair(api::from_uint64(0), api::from_uint64(0));
     } else if (compare_result == 0) {
-        return api::from_uint64(0);
+        return std::make_pair(api::from_uint64(1), api::from_uint64(0));
     }
 
     std::vector<std::uint8_t> q {};
@@ -183,7 +165,8 @@ api::API api::mod(api::API const& lhs, api::API const& rhs)
         }
         r = r_api.get_data();
     }
-    return api::API { r };
+
+    return std::make_pair(api::API { q }, api::API { r });
 }
 
 api::API api::from_uint64(std::uint64_t number)
@@ -236,8 +219,9 @@ void to_stringstream(api::API const& api, std::stringstream& stream)
     if (api::compare(api, tenAsAPI) == -1) {
         stream << api::to_uint64(api);
     } else {
-        to_stringstream(api / tenAsAPI, stream);
-        to_stringstream(api::mod(api, tenAsAPI), stream);
+        auto const [div, mod] = api::div_mod(api, tenAsAPI);
+        to_stringstream(div, stream);
+        to_stringstream(mod, stream);
     }
 }
 
