@@ -4,26 +4,58 @@
 
 using namespace ::testing;
 
+TEST(ArbitraryPrecisionIntEqualTest, ZeroAndEmptyVectorAreEqual)
+{
+    api::API const api_1 { std::vector<std::uint8_t> {} };
+    api::API const api_2 { std::vector<std::uint8_t> { 0 } };
+    ASSERT_TRUE(api_1 == api_2);
+    ASSERT_FALSE(api_1 != api_2);
+}
+
 class ArbitraryPrecisionIntEqualTestFixture
-    : public ::testing::TestWithParam<std::tuple<std::uint64_t, std::vector<std::uint8_t>>> { };
+    : public ::testing::TestWithParam<std::vector<std::uint8_t>> { };
 
 TEST_P(ArbitraryPrecisionIntEqualTestFixture, IsEqual)
 {
-    auto const abi = api::from_int(std::get<0>(GetParam()));
-    api::API const expected_abi { std::get<1>(GetParam()) };
-    ASSERT_TRUE(abi == expected_abi);
-    ASSERT_FALSE(abi != expected_abi);
-}
-
-TEST_P(ArbitraryPrecisionIntEqualTestFixture, FromInt)
-{
-    auto const abi = api::from_int(std::get<0>(GetParam()));
-
-    auto const expected_value = std::get<1>(GetParam());
-    ASSERT_EQ(abi.get_data(), expected_value);
+    api::API const api_1 { GetParam() };
+    api::API const api_2 { GetParam() };
+    ASSERT_TRUE(api_1 == api_2);
+    ASSERT_FALSE(api_1 != api_2);
 }
 
 INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntEqualTest, ArbitraryPrecisionIntEqualTestFixture,
+    ::testing::Values(
+        // clang-format off
+        std::vector<std::uint8_t>{},
+        std::vector<std::uint8_t>{ 0 },
+        std::vector<std::uint8_t> { 1u },
+        std::vector<std::uint8_t> { 2u },
+        std::vector<std::uint8_t> { 16u },
+        std::vector<std::uint8_t> { std::numeric_limits<std::uint8_t>::max() },
+        std::vector<std::uint8_t> { 0u, 1u },
+        std::vector<std::uint8_t> { 1u, 1u },
+        std::vector<std::uint8_t> { 99u, 1u },
+        std::vector<std::uint8_t> { 0, 2u },
+        std::vector<std::uint8_t> { 0, 4u },
+        std::vector<std::uint8_t> { 0, 100u },
+        std::vector<std::uint8_t> { 0, 200u },
+        std::vector<std::uint8_t> { 0, 254u },
+        std::vector<std::uint8_t> { 0u , 255u },
+        std::vector<std::uint8_t> { 0, 0, 1u } // clang-format on
+        ));
+
+class ArbitraryPrecisionIntFromIntTestFixture
+    : public ::testing::TestWithParam<std::tuple<std::uint64_t, std::vector<std::uint8_t>>> { };
+
+TEST_P(ArbitraryPrecisionIntFromIntTestFixture, FromInt)
+{
+    auto const api = api::from_int(std::get<0>(GetParam()));
+
+    auto const expected_value = std::get<1>(GetParam());
+    ASSERT_EQ(api.get_data(), expected_value);
+}
+
+INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntEqualTest, ArbitraryPrecisionIntFromIntTestFixture,
     ::testing::Values(
         // clang-format off
         std::make_tuple(0, std::vector<std::uint8_t> { }),
@@ -110,3 +142,10 @@ INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntComparisonTest,
         std::make_tuple(std::vector<std::uint8_t> { 99u, 0u }, std::vector<std::uint8_t> { 100u }, -1)
         // clang-format on
         ));
+
+TEST(ArbitraryPrecisionIntegerToIntTest, MaxValue)
+{
+    api::API api { std::vector<std::uint8_t> { 1, 255, 255, 255, 255, 255, 255, 255, 255 } };
+
+    ASSERT_EQ(api::to_uint64(api), std::numeric_limits<std::uint64_t>::max());
+}
