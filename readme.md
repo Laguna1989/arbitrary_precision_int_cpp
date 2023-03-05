@@ -1,7 +1,5 @@
 # Arbitrary Precision Integer
 
-TODO
-
 ## How to run unittests
 
 ```shell

@@ -1,0 +1,17 @@
+file(GLOB_RECURSE SOURCEFILES arbitrary_precision_int/*)
+add_library(ArbitraryPrecisionInteger ${SOURCEFILES})
+
+if (MSVC)
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "/W3")
+    target_compile_options(ArbitraryPrecisionInteger PUBLIC "/EHsc")
+elseif (EMSCRIPTEN)
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "-Wall")
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "-Wextra")
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "-fpermissive")
+else ()
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "-Wall")
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "-Wextra")
+    target_compile_options(ArbitraryPrecisionInteger PRIVATE "-fpermissive")
+endif ()
+
+target_include_directories(ArbitraryPrecisionInteger PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

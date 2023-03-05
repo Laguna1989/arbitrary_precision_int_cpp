@@ -146,7 +146,7 @@ std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& 
         return std::make_pair(zero_as_api, zero_as_api);
     }
     if (rhs == one_as_api) {
-        return std::make_pair(lhs, one_as_api);
+        return std::make_pair(lhs, zero_as_api);
     }
 
     auto const compare_result = api::compare(lhs, rhs);
