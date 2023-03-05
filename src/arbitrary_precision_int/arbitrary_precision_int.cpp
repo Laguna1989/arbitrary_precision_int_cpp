@@ -113,18 +113,18 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
 
 api::API api::operator*(api::API const& lhs, api::API const& rhs)
 {
-    std::vector<std::uint8_t> result;
-    
+    api::API result = api::from_uint64(0);
+
     auto const [shorter, longer] = order_vectors(lhs.get_data(), rhs.get_data());
 
     std::vector<std::uint8_t> tmp = *longer;
     for (auto i = 0u; i != shorter->size(); ++i) {
         for (auto j = 0u; j != shorter->at(i); ++j) {
-            result = (api::API { result } + api::API { tmp }).get_data();
+            result = api::API { result } + api::API { tmp };
         }
         tmp.insert(tmp.begin(), 0u); // effectively shifting all bytes one place to the right.
     }
-    return api::API { std::move(result) };
+    return result;
 }
 
 api::API api::operator/(api::API const& lhs, api::API const& rhs)
@@ -141,15 +141,20 @@ api::API api::mod(api::API const& lhs, api::API const& rhs)
 
 std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& rhs)
 {
-    if (rhs == api::from_uint64(0)) {
-        return std::make_pair(api::from_uint64(0), api::from_uint64(0));
+    static api::API const zero_as_api = api::from_uint64(0);
+    static api::API const one_as_api = api::from_uint64(1);
+    if (rhs == zero_as_api) {
+        return std::make_pair(zero_as_api, zero_as_api);
+    }
+    if (rhs == one_as_api) {
+        return std::make_pair(lhs, one_as_api);
     }
 
     auto const compare_result = api::compare(lhs, rhs);
     if (compare_result == -1) {
-        return std::make_pair(api::from_uint64(0), api::from_uint64(0));
+        return std::make_pair(zero_as_api, zero_as_api);
     } else if (compare_result == 0) {
-        return std::make_pair(api::from_uint64(1), api::from_uint64(0));
+        return std::make_pair(one_as_api, zero_as_api);
     }
 
     std::vector<std::uint8_t> q {};
