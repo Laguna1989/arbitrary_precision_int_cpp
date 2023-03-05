@@ -84,7 +84,7 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
         return lhs;
     }
     auto const compare_result = api::compare(lhs, rhs);
-    if (compare_result == -1) {
+    if (compare_result <= 0) {
         return api::from_uint64(0u);
     }
     auto const new_size = (lhs.get_data().size() > rhs.get_data().size() ? lhs.get_data().size()
@@ -92,7 +92,6 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
     std::vector<std::uint8_t> result(new_size, 0u);
     std::int32_t carry = 0u;
     for (auto i = 0u; i != new_size; ++i) {
-
         std::int32_t left_value
             = (i < lhs.get_data().size()) ? static_cast<std::int32_t>(lhs.get_data().at(i)) : 0;
         std::int32_t const right_value
