@@ -9,6 +9,22 @@ namespace api {
 
 class API {
 public:
+    /// Default constructor
+    API();
+
+    /// Destructor
+    ~API() = default;
+
+    /// Copy constructor
+    API(API const&) = default;
+    /// Move constructor
+    API(API&&) noexcept = default;
+
+    /// Copy assignment operator
+    API& operator=(const API& other) = default;
+    /// Move assignment operator
+    API& operator=(API&& other) noexcept = default;
+
     /// Constructor
     /// \param values bytes composing the number
     explicit API(std::vector<std::uint8_t> const& values);

@@ -33,6 +33,11 @@ void trim_vector(std::vector<std::uint8_t>& vec)
 
 } // namespace
 
+api::API::API()
+    : m_data {}
+{
+}
+
 api::API::API(std::vector<std::uint8_t> const& values)
     : m_data { values }
 {
