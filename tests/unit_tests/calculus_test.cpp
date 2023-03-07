@@ -1,5 +1,6 @@
 #include <arbitrary_precision_int/arbitrary_precision_int.hpp>
 #include <gtest/gtest.h>
+#include <tuple>
 
 class ArbitraryPrecisionIntCalculusTestFixture
     : public ::testing::TestWithParam<std::tuple<std::vector<std::uint8_t>,

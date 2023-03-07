@@ -1,5 +1,6 @@
 #include "arbitrary_precision_int.hpp"
 #include <sstream>
+#include <tuple>
 #include <utility>
 
 namespace {
