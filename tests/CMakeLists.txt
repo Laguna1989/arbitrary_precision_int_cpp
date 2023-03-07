@@ -1,4 +1,5 @@
 
+message(STATUS "api: enable unit tests: ${API_ENABLE_UNIT_TESTS}")
 if (API_ENABLE_UNIT_TESTS)
     add_subdirectory(unit_tests)
 endif ()
