@@ -18,7 +18,7 @@ auto order_vectors(std::vector<std::uint8_t> const& lhs, std::vector<std::uint8_
     return std::make_tuple(shorter, longer);
 }
 
-void trim_vector(std::vector<std::uint8_t>& vec)
+void trim_vector_in_place(std::vector<std::uint8_t>& vec)
 {
     if (vec.empty()) {
         return;
@@ -31,6 +31,25 @@ void trim_vector(std::vector<std::uint8_t>& vec)
     }
 }
 
+void to_stringstream(api::API const& api, std::stringstream& stream)
+{
+    static api::API const tenAsAPI = api::from_uint64(10);
+    if (api::compare(api, tenAsAPI) == -1) {
+        stream << api::to_uint64(api);
+    } else {
+        auto const [div, mod] = api::div_mod(api, tenAsAPI);
+        to_stringstream(div, stream);
+        to_stringstream(mod, stream);
+    }
+}
+
+std::string to_string(api::API const& api)
+{
+    std::stringstream sstream {};
+    to_stringstream(api, sstream);
+    return sstream.str();
+}
+
 } // namespace
 
 api::API::API()
@@ -41,18 +60,24 @@ api::API::API()
 api::API::API(std::vector<std::uint8_t> const& values)
     : m_data { values }
 {
-    trim();
+    trim_vector_in_place(m_data);
 }
 
 api::API::API(std::vector<std::uint8_t>&& values)
     : m_data { std::move(values) }
 {
-    trim();
+    trim_vector_in_place(m_data);
 }
 
 std::vector<std::uint8_t> const& api::API::get_data() const { return m_data; }
 
-void api::API::trim() { trim_vector(m_data); }
+std::string api::API::to_string() const
+{
+    if (m_string_representation.empty()) {
+        m_string_representation = ::to_string(*this);
+    }
+    return m_string_representation;
+}
 
 bool api::operator==(api::API const& lhs, api::API const& rhs)
 {
@@ -79,7 +104,7 @@ api::API api::operator+(api::API const& lhs, api::API const& rhs)
             result.at(i + 1u) = 1u;
         }
     }
-    trim_vector(result);
+    trim_vector_in_place(result);
     return api::API { std::move(result) };
 }
 
@@ -111,7 +136,7 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
             result.at(i) = static_cast<std::uint8_t>(difference);
         }
     }
-    trim_vector(result);
+    trim_vector_in_place(result);
     return api::API { std::move(result) };
 }
 
@@ -177,7 +202,7 @@ std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& 
         r = r_api.get_data();
     }
 
-    return std::make_pair(api::API { q }, api::API { r });
+    return std::make_pair(api::API { std::move(q) }, api::API { std::move(r) });
 }
 
 api::API api::from_uint64(std::uint64_t number)
@@ -224,33 +249,14 @@ int api::compare(api::API const& lhs, api::API const& rhs)
     return 0;
 }
 
-void to_stringstream(api::API const& api, std::stringstream& stream)
-{
-    static api::API const tenAsAPI = api::from_uint64(10);
-    if (api::compare(api, tenAsAPI) == -1) {
-        stream << api::to_uint64(api);
-    } else {
-        auto const [div, mod] = api::div_mod(api, tenAsAPI);
-        to_stringstream(div, stream);
-        to_stringstream(mod, stream);
-    }
-}
-
-std::string api::to_string(api::API const& api)
-{
-    std::stringstream sstream {};
-    to_stringstream(api, sstream);
-    return sstream.str();
-}
-
 std::uint64_t api::to_uint64(api::API const& api)
 {
     if (api.get_data().size() > 8) {
         return std::numeric_limits<std::uint64_t>::max();
     }
-    std::uint64_t retval = 0u;
+    std::uint64_t return_value = 0u;
     for (auto i = 0u; i != api.get_data().size(); ++i) {
-        retval += (api.get_data().at(i) << (i * 8));
+        return_value += (api.get_data().at(i) << (i * 8));
     }
-    return retval;
+    return return_value;
 }

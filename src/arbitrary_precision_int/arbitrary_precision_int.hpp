@@ -35,9 +35,15 @@ public:
     /// \return bytes composing the number
     [[nodiscard]] std::vector<std::uint8_t> const& get_data() const;
 
+    /// Convert the arbitrary precision integer to a string. Uses internal cache to avoid
+    /// re-calculation of string.
+    /// \return string representation of the arbitrary precision integer
+    std::string to_string() const;
+
 private:
     std::vector<std::uint8_t> m_data;
-    void trim();
+
+    mutable std::string m_string_representation;
 };
 
 /// Compare two arbitrary precision integers for equality
@@ -98,11 +104,6 @@ int compare(API const& lhs, API const& rhs);
 /// \param number the number to convert to an arbitraryPrecisionInteger
 /// \return the API representation of the integer
 API from_uint64(std::uint64_t number);
-
-/// Convert an ArbitraryPrecisionInteger to a decimal string
-/// \param api the arbitrary precision integer
-/// \return the string representation of the arbitrary precision integer
-std::string to_string(API const& api);
 
 /// Convert an ArbitraryPrecisionInteger to a uint64_t
 /// \param api the arbitrary precision integer

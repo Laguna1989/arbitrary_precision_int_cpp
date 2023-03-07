@@ -10,7 +10,16 @@ TEST_P(ArbitraryPrecisionIntStringTestFixture, IsEqual)
 {
     api::API const api { std::get<0>(GetParam()) };
     std::string const expected_string { std::get<1>(GetParam()) };
-    ASSERT_EQ(api::to_string(api), expected_string);
+    ASSERT_EQ(api.to_string(), expected_string);
+}
+
+TEST_P(ArbitraryPrecisionIntStringTestFixture, CallToStringTwice)
+{
+    api::API const api { std::get<0>(GetParam()) };
+    std::string const expected_string { std::get<1>(GetParam()) };
+    ASSERT_EQ(api.to_string(), expected_string);
+    // calling to_string a second time results in the same string
+    ASSERT_EQ(api.to_string(), expected_string);
 }
 
 INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntStringTest, ArbitraryPrecisionIntStringTestFixture,
