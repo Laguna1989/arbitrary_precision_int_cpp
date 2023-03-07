@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project("ArbitraryPrecisionInteger")
 
-option(API_ENABLE_UNIT_TESTS "Enable unit tests" ON)
-option(API_ENABLE_PERFORMANCE_TESTS "Enable performance tests" ON)
+option(API_ENABLE_UNIT_TESTS "Enable unit tests" OFF)
+option(API_ENABLE_PERFORMANCE_TESTS "Enable performance tests" OFF)
 
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
