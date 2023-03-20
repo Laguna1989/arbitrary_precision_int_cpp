@@ -34,7 +34,7 @@ if (API_ENABLE_UNIT_TESTS)
 
     file(GLOB_RECURSE UNITTESTFILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
-    add_executable(unittests ${UNITTESTFILES})
-    target_link_libraries(unittests gtest_main)
-    target_link_libraries(unittests ArbitraryPrecisionInteger)
+    add_executable(arbitrary_precision_int_unit_tests ${UNITTESTFILES})
+    target_link_libraries(arbitrary_precision_int_unit_tests gtest_main)
+    target_link_libraries(arbitrary_precision_int_unit_tests ArbitraryPrecisionInteger)
 endif ()
