@@ -1,4 +1,5 @@
 #include "arbitrary_precision_int.hpp"
+#include <limits>
 #include <sstream>
 #include <tuple>
 #include <utility>
