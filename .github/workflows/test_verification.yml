@@ -47,7 +47,7 @@ jobs:
 
       - name: Test
         run: ./arbitrary_precision_int_unit_tests --gtest_shuffle
-        working-directory: ${{github.workspace}}/build/
+        working-directory: ${{github.workspace}}/build/test/unit_tests/
 
   Linux_clang:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
 
       - name: Test
         run: ./arbitrary_precision_int_unit_tests --gtest_shuffle
-        working-directory: ${{github.workspace}}/build/
+        working-directory: ${{github.workspace}}/build/test/unit_tests/
 
   Windows:
     runs-on: windows-2019
@@ -108,4 +108,4 @@ jobs:
 
       - name: Test
         run: ./arbitrary_precision_int_unit_tests --gtest_shuffle
-        working-directory: ${{github.workspace}}/build/
+        working-directory: ${{github.workspace}}/build/test/unit_tests/
