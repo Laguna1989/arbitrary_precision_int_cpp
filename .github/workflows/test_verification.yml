@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        clangver: [ 8, 10, 11, 12, 13 ]
+        clangver: [ 10, 11, 12, 13 ]
     steps:
       - name: Set up cmake
         uses: jwlawson/actions-setup-cmake@v1.11
@@ -107,5 +107,5 @@ jobs:
         run: cmake --build .
 
       - name: Test
-        run: ./arbitrary_precision_int_unit_tests --gtest_shuffle
-        working-directory: ${{github.workspace}}/build/test/unit_tests/
+        run: ./arbitrary_precision_int_unit_tests.exe --gtest_shuffle
+        working-directory: ${{github.workspace}}/build/test/unit_tests/Debug
