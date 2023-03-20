@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  Linux_gcc:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gccver: [ 9, 10, 11 ]
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.19.x'
+
+      - name: Set up gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.gccver }}
+          platform: x64
+
+      - uses: actions/checkout@v2
+        with:
+          lfs: 'true'
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ github.job }}-${{ matrix.gccver }}-${{ matrix.os }}
+          max-size: 100M
+
+      - name: CMake
+        run: |
+          cmake \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DAPI_ENABLE_UNIT_TESTS=ON \
+          -B ${{github.workspace}}/build .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: make -j
+
+      - name: Test
+        run: ./arbitrary_precision_int_unit_tests --gtest_shuffle
+        working-directory: ${{github.workspace}}/build/test/unit_tests/
+
+  Windows:
+    runs-on: windows-2019
+    steps:
+      - name: Set up cmake
+        uses: jwlawson/actions-setup-cmake@v1.11
+        with:
+          cmake-version: '3.19.x'
+
+      - uses: actions/checkout@v2
+
+      - name: CMake
+        run: cmake -DAPI_ENABLE_UNIT_TESTS=ON -B ${{github.workspace}}/build .
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build .
+
+      - name: Test
+        run: ./arbitrary_precision_int_unit_tests.exe --gtest_shuffle
+        working-directory: ${{github.workspace}}/build/test/unit_tests/Debug
