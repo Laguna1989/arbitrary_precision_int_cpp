@@ -52,6 +52,33 @@ std::string to_string(api::API const& api)
     return sstream.str();
 }
 
+std::string to_exp_string(api::API const& api)
+{
+    auto str = api.to_string();
+    if (str.size() <= 3) {
+        return str;
+    }
+    std::string exp_str;
+    auto const exponent_as_string = std::to_string(str.size() - 1);
+    // a magic number of 5 is needed here. example:
+    // 1.02e
+    // 01234 => size = 5
+    //
+    exp_str.resize(5 + exponent_as_string.size());
+    exp_str[0] = str[0];
+    exp_str[1] = '.';
+
+    exp_str[2] = str[1];
+    exp_str[3] = str[2];
+
+    exp_str[4] = 'e';
+
+    for (auto i = 0u; i != exponent_as_string.size(); ++i) {
+        exp_str[5 + i] = exponent_as_string[i];
+    }
+    return exp_str;
+}
+
 } // namespace
 
 api::API::API()
@@ -79,6 +106,13 @@ std::string api::API::to_string() const
         m_string_representation = ::to_string(*this);
     }
     return m_string_representation;
+}
+std::string api::API::to_exp_string() const
+{
+    if (m_exp_string_representation.empty()) {
+        m_exp_string_representation = ::to_exp_string(*this);
+    }
+    return m_exp_string_representation;
 }
 
 bool api::operator==(api::API const& lhs, api::API const& rhs)
@@ -192,7 +226,7 @@ std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& 
     q.resize(lhs.get_data().size());
     auto r = std::vector<std::uint8_t> {};
 
-    for (auto i = lhs.get_data().size() - 1; i != -1; --i) {
+    for (auto i = static_cast<std::int64_t>(lhs.get_data().size()) - 1; i != -1; --i) {
         r.insert(r.begin(), lhs.get_data()[i]); // effectively shifting all bytes one place to the
                                                 // right. Equals a multiplication by 256
 
@@ -231,11 +265,11 @@ api::API api::from_uint64(std::uint64_t number)
 
 int api::compare(api::API const& lhs, api::API const& rhs)
 {
-    auto [shorter, longer] = order_vectors(lhs.get_data(), rhs.get_data());
-    std::size_t const length_shorter = shorter->size();
-    std::size_t const length_longer = longer->size();
+    auto const [shorter, longer] = order_vectors(lhs.get_data(), rhs.get_data());
+    auto const length_shorter = static_cast<std::int64_t>(shorter->size());
+    auto const length_longer = static_cast<std::int64_t>(longer->size());
 
-    for (auto i = length_longer - 1; i != -1; --i) {
+    for (auto i = static_cast<std::int64_t>(length_longer) - 1; i != -1; --i) {
         if (i >= length_shorter) {
             if (longer->at(i) != 0) {
                 return &lhs.get_data() == shorter ? -1 : 1;

@@ -40,10 +40,16 @@ public:
     /// \return string representation of the arbitrary precision integer
     std::string to_string() const;
 
+    /// Convert the arbitrary precision integer to a si string. Uses an internal cache to avoid
+    /// recalculation of the string.
+    /// \return si string representation of the arbitrary precision integer
+    std::string to_exp_string() const;
+
 private:
     std::vector<std::uint8_t> m_data;
 
     mutable std::string m_string_representation;
+    mutable std::string m_exp_string_representation;
 };
 
 /// Compare two arbitrary precision integers for equality
