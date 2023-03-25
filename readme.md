@@ -1,5 +1,7 @@
 # Arbitrary Precision Integer
-[![Build Status](https://github.com/Laguna1989/arbitrary_precision_int_cpp/actions/workflows/test_verification.yml/badge.svg)](https://github.com/Laguna1989/arbitrary_precision_int_cpp/actions/workflows/unittests.yml)
+
+[![Build Status](https://github.com/Laguna1989/arbitrary_precision_int_cpp/actions/workflows/test_verification.yml/badge.svg)](https://github.com/Laguna1989/arbitrary_precision_int_cpp/actions/workflows/test_verification.yml)
+
 ## How to run unittests
 
 ```shell
@@ -9,7 +11,6 @@ cmake ..
 cmake --build .
 ./unittests
 ```
-
 
 ## Code usage
 
