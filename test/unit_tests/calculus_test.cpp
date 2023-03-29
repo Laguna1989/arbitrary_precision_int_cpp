@@ -202,7 +202,7 @@ TEST_P(ArbitraryPrecisionIntCalculusModTestFixture, ModReturnsCorrectResult)
     auto const lhs = api::API { std::get<0>(GetParam()) };
     auto const rhs = api::API { std::get<1>(GetParam()) };
 
-    auto const result = mod(lhs, rhs);
+    auto const result = lhs % rhs;
     auto const expected_result = api::API { std::get<2>(GetParam()) };
     ASSERT_EQ(result, expected_result);
 }

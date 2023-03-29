@@ -198,7 +198,7 @@ api::API api::operator/(api::API const& lhs, api::API const& rhs)
     return q;
 }
 
-api::API api::mod(api::API const& lhs, api::API const& rhs)
+api::API api::operator%(api::API const& lhs, api::API const& rhs)
 {
     auto const [_, r] = api::div_mod(lhs, rhs);
     return r;
