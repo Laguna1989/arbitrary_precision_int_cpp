@@ -92,7 +92,7 @@ API operator/(API const& lhs, API const& rhs);
 /// \param lhs first arbitrary precision integer
 /// \param rhs second arbitrary precision integer
 /// \return modulo of lhs anr rhs. if rhs is 0, the API equivalent of 0 is returned
-API mod(API const& lhs, API const& rhs);
+API operator%(API const& lhs, API const& rhs);
 
 ///
 /// \param lhs
