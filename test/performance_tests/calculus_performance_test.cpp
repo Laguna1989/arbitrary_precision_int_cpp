@@ -57,21 +57,22 @@ static void BM_Division(benchmark::State& state)
     }
 }
 
-BENCHMARK(BM_Division)
-    ->Unit(benchmark::kMillisecond)
-    ->ArgsProduct({ benchmark::CreateRange(2, 100, /*multi=*/4),
-        benchmark::CreateRange(2, 100, /*multi=*/4) });
 BENCHMARK(BM_Addition)
     ->Unit(benchmark::kMillisecond)
-    ->ArgsProduct({ benchmark::CreateRange(100, 1600, /*multi=*/4),
-        benchmark::CreateRange(100, 1600, /*multi=*/4) });
+    ->ArgsProduct({ benchmark::CreateRange(40000, 200000, /*multi=*/4),
+        benchmark::CreateRange(40000, 200000, /*multi=*/4) });
 
 BENCHMARK(BM_Subtraction)
     ->Unit(benchmark::kMillisecond)
-    ->ArgsProduct({ benchmark::CreateRange(100, 1600, /*multi=*/4),
-        benchmark::CreateRange(100, 1600, /*multi=*/4) });
+    ->ArgsProduct({ benchmark::CreateRange(40000, 200000, /*multi=*/4),
+        benchmark::CreateRange(40000, 200000, /*multi=*/4) });
 
 BENCHMARK(BM_Multiplication)
     ->Unit(benchmark::kMillisecond)
-    ->ArgsProduct({ benchmark::CreateRange(2, 100, /*multi=*/4),
-        benchmark::CreateRange(2, 100, /*multi=*/4) });
+    ->ArgsProduct({ benchmark::CreateRange(400, 2000, /*multi=*/4),
+        benchmark::CreateRange(400, 2000, /*multi=*/4) });
+
+BENCHMARK(BM_Division)
+    ->Unit(benchmark::kMillisecond)
+    ->ArgsProduct({ benchmark::CreateRange(400, 2000, /*multi=*/4),
+        benchmark::CreateRange(400, 2000, /*multi=*/4) });

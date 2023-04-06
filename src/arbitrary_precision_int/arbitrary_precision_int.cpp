@@ -130,8 +130,8 @@ api::API api::operator+(api::API const& lhs, api::API const& rhs)
     std::vector<std::uint8_t> result(new_size, 0u);
     for (auto i = 0u; i != new_size - 1; ++i) {
         // perform calculation in bigger type to be able to check for overflows
-        std::uint16_t const left_value = (i < lhs.get_data().size()) ? lhs.get_data().at(i) : 0u;
-        std::uint16_t const right_value = (i < rhs.get_data().size()) ? rhs.get_data().at(i) : 0u;
+        std::uint16_t const left_value = (i < lhs.get_data().size()) ? lhs.get_data()[i] : 0u;
+        std::uint16_t const right_value = (i < rhs.get_data().size()) ? rhs.get_data()[i] : 0u;
 
         std::uint16_t const sum = left_value + right_value + result.at(i);
         result.at(i) = static_cast<std::uint8_t>(sum);
@@ -158,10 +158,10 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
     std::vector<std::uint8_t> result(new_size, 0u);
     std::int32_t carry = 0u;
     for (auto i = 0u; i != new_size; ++i) {
-        std::int32_t left_value
-            = (i < lhs.get_data().size()) ? static_cast<std::int32_t>(lhs.get_data().at(i)) : 0;
+        std::int32_t const left_value
+            = (i < lhs.get_data().size()) ? static_cast<std::int32_t>(lhs.get_data()[i]) : 0;
         std::int32_t const right_value
-            = (i < rhs.get_data().size()) ? static_cast<std::int32_t>(rhs.get_data().at(i)) : 0;
+            = (i < rhs.get_data().size()) ? static_cast<std::int32_t>(rhs.get_data()[i]) : 0;
 
         std::int32_t const difference = left_value - right_value + carry;
         if (difference < 0) {
