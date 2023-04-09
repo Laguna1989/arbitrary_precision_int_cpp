@@ -3,7 +3,7 @@
 
 static void BM_ToString(benchmark::State& state)
 {
-    std::vector<std::uint8_t> data1;
+    std::vector<std::uint16_t> data1;
     data1.resize(static_cast<std::size_t>(state.range(0)), 123u);
     for (auto _ : state) {
         // construction is done inside the loop because the API class caches the to_string result
@@ -14,7 +14,7 @@ static void BM_ToString(benchmark::State& state)
 
 static void BM_ToExpString(benchmark::State& state)
 {
-    std::vector<std::uint8_t> data1;
+    std::vector<std::uint16_t> data1;
     data1.resize(static_cast<std::size_t>(state.range(0)), 123u);
     for (auto _ : state) {
         // construction is done inside the loop because the API class caches the to_exp_string

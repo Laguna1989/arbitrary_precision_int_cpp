@@ -27,13 +27,13 @@ public:
 
     /// Constructor
     /// \param values bytes composing the number
-    explicit API(std::vector<std::uint8_t> const& values);
+    explicit API(std::vector<std::uint16_t> const& values);
     /// Constructor
     /// \param values bytes composing the number
-    explicit API(std::vector<std::uint8_t>&& values);
+    explicit API(std::vector<std::uint16_t>&& values);
     /// Get the data from the class
     /// \return bytes composing the number
-    [[nodiscard]] std::vector<std::uint8_t> const& get_data() const;
+    [[nodiscard]] std::vector<std::uint16_t> const& get_data() const;
 
     /// Convert the arbitrary precision integer to a string. Uses internal cache to avoid
     /// re-calculation of string.
@@ -46,7 +46,7 @@ public:
     std::string to_exp_string() const;
 
 private:
-    std::vector<std::uint8_t> m_data;
+    std::vector<std::uint16_t> m_data;
 
     mutable std::string m_string_representation;
     mutable std::string m_exp_string_representation;

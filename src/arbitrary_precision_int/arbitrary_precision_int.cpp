@@ -6,10 +6,10 @@
 
 namespace {
 
-auto order_vectors(std::vector<std::uint8_t> const& lhs, std::vector<std::uint8_t> const& rhs)
+auto order_vectors(std::vector<std::uint16_t> const& lhs, std::vector<std::uint16_t> const& rhs)
 {
-    std::vector<std::uint8_t> const* shorter = nullptr;
-    std::vector<std::uint8_t> const* longer = nullptr;
+    std::vector<std::uint16_t> const* shorter = nullptr;
+    std::vector<std::uint16_t> const* longer = nullptr;
     if (lhs.size() <= rhs.size()) {
         shorter = &lhs;
         longer = &rhs;
@@ -20,7 +20,7 @@ auto order_vectors(std::vector<std::uint8_t> const& lhs, std::vector<std::uint8_
     return std::make_tuple(shorter, longer);
 }
 
-void trim_vector_in_place(std::vector<std::uint8_t>& vec)
+void trim_vector_in_place(std::vector<std::uint16_t>& vec)
 {
     if (vec.empty()) {
         return;
@@ -86,19 +86,19 @@ api::API::API()
 {
 }
 
-api::API::API(std::vector<std::uint8_t> const& values)
+api::API::API(std::vector<std::uint16_t> const& values)
     : m_data { values }
 {
     trim_vector_in_place(m_data);
 }
 
-api::API::API(std::vector<std::uint8_t>&& values)
+api::API::API(std::vector<std::uint16_t>&& values)
     : m_data { std::move(values) }
 {
     trim_vector_in_place(m_data);
 }
 
-std::vector<std::uint8_t> const& api::API::get_data() const { return m_data; }
+std::vector<std::uint16_t> const& api::API::get_data() const { return m_data; }
 
 std::string api::API::to_string() const
 {
@@ -127,16 +127,16 @@ api::API api::operator+(api::API const& lhs, api::API const& rhs)
     auto const new_size = (lhs.get_data().size() > rhs.get_data().size() ? lhs.get_data().size()
                                                                          : rhs.get_data().size())
         + 1u;
-    std::vector<std::uint8_t> result(new_size, 0u);
+    std::vector<std::uint16_t> result(new_size, 0u);
     for (auto i = 0u; i != new_size - 1; ++i) {
         // perform calculation in bigger type to be able to check for overflows
-        std::uint16_t const left_value = (i < lhs.get_data().size()) ? lhs.get_data()[i] : 0u;
-        std::uint16_t const right_value = (i < rhs.get_data().size()) ? rhs.get_data()[i] : 0u;
+        std::uint32_t const left_value = (i < lhs.get_data().size()) ? lhs.get_data()[i] : 0u;
+        std::uint32_t const right_value = (i < rhs.get_data().size()) ? rhs.get_data()[i] : 0u;
 
-        std::uint16_t const sum = left_value + right_value + result.at(i);
-        result.at(i) = static_cast<std::uint8_t>(sum);
+        std::uint32_t const sum = left_value + right_value + result.at(i);
+        result.at(i) = static_cast<std::uint16_t>(sum);
         // deal with carry
-        if (sum > static_cast<std::uint16_t>(std::numeric_limits<std::uint8_t>::max())) {
+        if (sum > static_cast<std::uint32_t>(std::numeric_limits<std::uint16_t>::max())) {
             result.at(i + 1u) = 1u;
         }
     }
@@ -155,21 +155,22 @@ api::API api::operator-(api::API const& lhs, api::API const& rhs)
     }
     auto const new_size = (lhs.get_data().size() > rhs.get_data().size() ? lhs.get_data().size()
                                                                          : rhs.get_data().size());
-    std::vector<std::uint8_t> result(new_size, 0u);
-    std::int32_t carry = 0u;
+    std::vector<std::uint16_t> result(new_size, 0u);
+    std::int64_t carry = 0u;
     for (auto i = 0u; i != new_size; ++i) {
-        std::int32_t const left_value
-            = (i < lhs.get_data().size()) ? static_cast<std::int32_t>(lhs.get_data()[i]) : 0;
-        std::int32_t const right_value
-            = (i < rhs.get_data().size()) ? static_cast<std::int32_t>(rhs.get_data()[i]) : 0;
+        std::int64_t const left_value
+            = (i < lhs.get_data().size()) ? static_cast<std::int64_t>(lhs.get_data()[i]) : 0;
+        std::int64_t const right_value
+            = (i < rhs.get_data().size()) ? static_cast<std::int64_t>(rhs.get_data()[i]) : 0;
 
-        std::int32_t const difference = left_value - right_value + carry;
+        std::int64_t const difference = left_value - right_value + carry;
         if (difference < 0) {
             carry = -1;
-            result.at(i) = 256u + difference;
+            result.at(i) = static_cast<std::uint32_t>(std::numeric_limits<std::uint16_t>::max()) + 1
+                + difference;
         } else {
             carry = 0;
-            result.at(i) = static_cast<std::uint8_t>(difference);
+            result.at(i) = static_cast<std::uint16_t>(difference);
         }
     }
     trim_vector_in_place(result);
@@ -182,7 +183,7 @@ api::API api::operator*(api::API const& lhs, api::API const& rhs)
 
     auto const [shorter, longer] = order_vectors(lhs.get_data(), rhs.get_data());
 
-    std::vector<std::uint8_t> tmp = *longer;
+    std::vector<std::uint16_t> tmp = *longer;
     for (auto i = 0u; i != shorter->size(); ++i) {
         for (auto j = 0u; j != shorter->at(i); ++j) {
             result = api::API { result } + api::API { tmp };
@@ -222,9 +223,9 @@ std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& 
         return std::make_pair(one_as_api, zero_as_api);
     }
 
-    std::vector<std::uint8_t> q {};
+    std::vector<std::uint16_t> q {};
     q.resize(lhs.get_data().size());
-    auto r = std::vector<std::uint8_t> {};
+    auto r = std::vector<std::uint16_t> {};
 
     for (auto i = static_cast<std::int64_t>(lhs.get_data().size()) - 1; i != -1; --i) {
         r.insert(r.begin(), lhs.get_data()[i]); // effectively shifting all bytes one place to the
@@ -243,21 +244,21 @@ std::pair<api::API, api::API> api::div_mod(api::API const& lhs, api::API const& 
 
 api::API api::from_uint64(std::uint64_t number)
 {
-    std::vector<std::uint8_t> data;
+    std::vector<std::uint16_t> data;
     while (true) {
         if (number == 0) {
             break;
         }
-        auto const max = std::numeric_limits<std::uint8_t>::max();
+        auto const max = std::numeric_limits<std::uint16_t>::max();
         if (number == max) {
             data.push_back(max);
             break;
         }
-        auto const max_plus_one = static_cast<std::uint16_t>(max) + 1u;
+        auto const max_plus_one = static_cast<std::uint32_t>(max) + 1u;
         std::uint64_t const divisor = number / max_plus_one;
         std::uint64_t const remainder = number % max_plus_one;
 
-        data.push_back(static_cast<std::uint8_t>(remainder));
+        data.push_back(static_cast<std::uint16_t>(remainder));
         number = divisor;
     }
     return API { std::move(data) };
@@ -287,12 +288,12 @@ int api::compare(api::API const& lhs, api::API const& rhs)
 
 std::uint64_t api::to_uint64(api::API const& api)
 {
-    if (api.get_data().size() > 8) {
+    if (api.get_data().size() > 4) {
         return std::numeric_limits<std::uint64_t>::max();
     }
     std::uint64_t return_value = 0u;
-    for (auto i = 0u; i != api.get_data().size(); ++i) {
-        return_value += (api.get_data().at(i) << (i * 8));
+    for (std::uint32_t i = 0u; i != api.get_data().size(); ++i) {
+        return_value += (static_cast<std::uint64_t>(api.get_data().at(i)) << (i * 16));
     }
     return return_value;
 }

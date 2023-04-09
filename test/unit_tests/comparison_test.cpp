@@ -3,17 +3,16 @@
 #include <limits>
 
 using namespace ::testing;
-
 TEST(ArbitraryPrecisionIntEqualTest, ZeroAndEmptyVectorAreEqual)
 {
-    api::API const api_1 { std::vector<std::uint8_t> {} };
-    api::API const api_2 { std::vector<std::uint8_t> { 0 } };
+    api::API const api_1 { std::vector<std::uint16_t> {} };
+    api::API const api_2 { std::vector<std::uint16_t> { 0 } };
     ASSERT_TRUE(api_1 == api_2);
     ASSERT_FALSE(api_1 != api_2);
 }
 
 class ArbitraryPrecisionIntEqualTestFixture
-    : public ::testing::TestWithParam<std::vector<std::uint8_t>> { };
+    : public ::testing::TestWithParam<std::vector<std::uint16_t>> { };
 
 TEST_P(ArbitraryPrecisionIntEqualTestFixture, IsEqual)
 {
@@ -26,26 +25,31 @@ TEST_P(ArbitraryPrecisionIntEqualTestFixture, IsEqual)
 INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntEqualTest, ArbitraryPrecisionIntEqualTestFixture,
     ::testing::Values(
         // clang-format off
-        std::vector<std::uint8_t>{},
-        std::vector<std::uint8_t>{ 0 },
-        std::vector<std::uint8_t> { 1u },
-        std::vector<std::uint8_t> { 2u },
-        std::vector<std::uint8_t> { 16u },
-        std::vector<std::uint8_t> { std::numeric_limits<std::uint8_t>::max() },
-        std::vector<std::uint8_t> { 0u, 1u },
-        std::vector<std::uint8_t> { 1u, 1u },
-        std::vector<std::uint8_t> { 99u, 1u },
-        std::vector<std::uint8_t> { 0, 2u },
-        std::vector<std::uint8_t> { 0, 4u },
-        std::vector<std::uint8_t> { 0, 100u },
-        std::vector<std::uint8_t> { 0, 200u },
-        std::vector<std::uint8_t> { 0, 254u },
-        std::vector<std::uint8_t> { 0u , 255u },
-        std::vector<std::uint8_t> { 0, 0, 1u } // clang-format on
+        std::vector<std::uint16_t>{},
+        std::vector<std::uint16_t>{ 0 },
+        std::vector<std::uint16_t> { 1u },
+        std::vector<std::uint16_t> { 2u },
+        std::vector<std::uint16_t> { 16u },
+        std::vector<std::uint16_t> { std::numeric_limits<std::uint8_t>::max() - 1 },
+        std::vector<std::uint16_t> { std::numeric_limits<std::uint8_t>::max() },
+        std::vector<std::uint16_t> { static_cast<std::uint16_t>(std::numeric_limits<std::uint8_t>::max()) + 1 },
+        std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() -1 },
+        std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() },
+        std::vector<std::uint16_t> { 0u, 1u },
+        std::vector<std::uint16_t> { 1u, 1u },
+        std::vector<std::uint16_t> { 99u, 1u },
+        std::vector<std::uint16_t> { 0, 2u },
+        std::vector<std::uint16_t> { 0, 4u },
+        std::vector<std::uint16_t> { 0, 100u },
+        std::vector<std::uint16_t> { 0, 200u },
+        std::vector<std::uint16_t> { 0, std::numeric_limits<std::uint8_t>::max() - 1 },
+        std::vector<std::uint16_t> { 0u , std::numeric_limits<std::uint8_t>::max() },
+        std::vector<std::uint16_t> { 0u , std::numeric_limits<std::uint16_t>::max() },
+        std::vector<std::uint16_t> { 0, 0, 1u } // clang-format on
         ));
 
 class ArbitraryPrecisionIntFromIntTestFixture
-    : public ::testing::TestWithParam<std::tuple<std::uint64_t, std::vector<std::uint8_t>>> { };
+    : public ::testing::TestWithParam<std::tuple<std::uint64_t, std::vector<std::uint16_t>>> { };
 
 TEST_P(ArbitraryPrecisionIntFromIntTestFixture, FromInt)
 {
@@ -55,24 +59,51 @@ TEST_P(ArbitraryPrecisionIntFromIntTestFixture, FromInt)
     ASSERT_EQ(api.get_data(), expected_value);
 }
 
+TEST_P(ArbitraryPrecisionIntFromIntTestFixture, ToInt)
+{
+    auto const api = api::API { std::get<1>(GetParam()) };
+    auto const expected_uint_value = std::get<0>(GetParam());
+
+    ASSERT_EQ(api::to_uint64(api), expected_uint_value);
+}
+
 INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntEqualTest, ArbitraryPrecisionIntFromIntTestFixture,
     ::testing::Values(
         // clang-format off
-        std::make_tuple(0, std::vector<std::uint8_t> { }),
-        std::make_tuple(1, std::vector<std::uint8_t> { 1u }),
-        std::make_tuple(2, std::vector<std::uint8_t> { 2u }),
-        std::make_tuple(16, std::vector<std::uint8_t> { 16u }),
-        std::make_tuple(std::numeric_limits<std::uint8_t>::max(), std::vector<std::uint8_t> { std::numeric_limits<std::uint8_t>::max() }),
-        std::make_tuple(std::numeric_limits<std::uint8_t>::max()+1u, std::vector<std::uint8_t> { 0u, 1u }),
-        std::make_tuple(std::numeric_limits<std::uint8_t>::max()+2u, std::vector<std::uint8_t> { 1u, 1u }),
-        std::make_tuple(std::numeric_limits<std::uint8_t>::max()+100u, std::vector<std::uint8_t> { 99u, 1u }),
-        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*2u, std::vector<std::uint8_t> { 0, 2u }),
-        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*4u, std::vector<std::uint8_t> { 0, 4u }),
-        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*100u, std::vector<std::uint8_t> { 0, 100u }),
-        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*200u, std::vector<std::uint8_t> { 0, 200u }),
-        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*254u, std::vector<std::uint8_t> { 0, 254u }),
-        std::make_tuple((256)*255, std::vector<std::uint8_t> { 0u , 255u }),
-        std::make_tuple((256)*(256), std::vector<std::uint8_t> { 0, 0, 1u })
+        std::make_tuple(0, std::vector<std::uint16_t> { }),
+        std::make_tuple(1, std::vector<std::uint16_t> { 1u }),
+        std::make_tuple(2, std::vector<std::uint16_t> { 2u }),
+        std::make_tuple(16, std::vector<std::uint16_t> { 16u }),
+        std::make_tuple(std::numeric_limits<std::uint8_t>::max(), std::vector<std::uint16_t> {std::numeric_limits<std::uint8_t>::max() }),
+        std::make_tuple(std::numeric_limits<std::uint8_t>::max()+1u, std::vector<std::uint16_t> { std::numeric_limits<std::uint8_t>::max()+1u }),
+        std::make_tuple(std::numeric_limits<std::uint8_t>::max()+2u, std::vector<std::uint16_t> { std::numeric_limits<std::uint8_t>::max()+2u }),
+        std::make_tuple(std::numeric_limits<std::uint8_t>::max()+100u, std::vector<std::uint16_t> {std::numeric_limits<std::uint8_t>::max()+100u }),
+        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*2u, std::vector<std::uint16_t> { (std::numeric_limits<std::uint8_t>::max()+1u)*2u }),
+        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*4u, std::vector<std::uint16_t>{ (std::numeric_limits<std::uint8_t>::max()+1u)*4u }),
+        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*100u, std::vector<std::uint16_t> { (std::numeric_limits<std::uint8_t>::max()+1u)*100u }),
+        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*200u, std::vector<std::uint16_t> { (std::numeric_limits<std::uint8_t>::max()+1u)*200u }),
+        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*254u, std::vector<std::uint16_t> { (std::numeric_limits<std::uint8_t>::max()+1u)*254u }),
+        std::make_tuple((std::numeric_limits<std::uint8_t>::max()+1u)*254u, std::vector<std::uint16_t> { (std::numeric_limits<std::uint8_t>::max()+1u)*254u }),
+
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max() - 1, std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() - 1 }),
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max(), std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max()  }),
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max() + 1, std::vector<std::uint16_t> { 0u, 1u  }),
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max() + 1 + 1, std::vector<std::uint16_t> { 1u, 1u  }),
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max() + 1 + 2, std::vector<std::uint16_t> { 2u, 1u  }),
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max() + 1 + 3, std::vector<std::uint16_t> { 3u, 1u  }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) *2, std::vector<std::uint16_t> { 0u, 2u  }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) * 255, std::vector<std::uint16_t> { 0u, 255u }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) * 256, std::vector<std::uint16_t> { 0u, 256u }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) * 257, std::vector<std::uint16_t> { 0u, 257u }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) * 5000, std::vector<std::uint16_t> { 0u, 5000u }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) * 10000, std::vector<std::uint16_t> { 0u, 10000u }),
+        std::make_tuple((std::numeric_limits<std::uint16_t>::max() + 1) * 30000, std::vector<std::uint16_t> { 0u, 30000u }),
+        std::make_tuple((static_cast<std::uint64_t>(std::numeric_limits<std::uint16_t>::max()) + 1) * 50000u, std::vector<std::uint16_t> { 0u, 50000u }),
+        std::make_tuple((static_cast<std::uint64_t>(std::numeric_limits<std::uint16_t>::max()) + 1) * 60000u, std::vector<std::uint16_t> { 0u, 60000u }),
+        std::make_tuple((static_cast<std::uint64_t>(std::numeric_limits<std::uint16_t>::max()) + 1) * (std::numeric_limits<std::uint16_t>::max()-1), std::vector<std::uint16_t> { 0u, std::numeric_limits<std::uint16_t>::max() - 1 }),
+        std::make_tuple((static_cast<std::uint64_t>(std::numeric_limits<std::uint16_t>::max()) + 1) * std::numeric_limits<std::uint16_t>::max(), std::vector<std::uint16_t> { 0u, std::numeric_limits<std::uint16_t>::max()}),
+        std::make_tuple((static_cast<std::uint64_t>(std::numeric_limits<std::uint32_t>::max()) -1), std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() - 1, std::numeric_limits<std::uint16_t>::max() }),
+        std::make_tuple((static_cast<std::uint64_t>(std::numeric_limits<std::uint32_t>::max())), std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max(), std::numeric_limits<std::uint16_t>::max() })
         // clang-format on
         ));
 
@@ -93,17 +124,18 @@ INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntUnEqualTest, ArbitraryPrecisionInt
         std::make_tuple(1u, 0u),
         std::make_tuple(2u, 0u),
         std::make_tuple(1u, 2u),
-        std::make_tuple(255u, 256u),
+        std::make_tuple(std::numeric_limits<std::uint8_t>::max(), static_cast<std::uint16_t>(std::numeric_limits<std::uint8_t>::max()) + 1),
         std::make_tuple(0u, 256u),
         std::make_tuple(256u, 257u),
         std::make_tuple(256u * 256u, 256u * 256u + 1u),
-        std::make_tuple(256u * 256u, 256u * 256u - 1u)
+        std::make_tuple(256u * 256u, 256u * 256u - 1u),
+        std::make_tuple(std::numeric_limits<std::uint16_t>::max(), static_cast<std::uint32_t>(std::numeric_limits<std::uint16_t>::max()) + 1)
         // clang-format on
         ));
 
 class ArbitraryPrecisionIntComparisonTestFixture
     : public ::testing::TestWithParam<
-          std::tuple<std::vector<std::uint8_t>, std::vector<std::uint8_t>, int>> { };
+          std::tuple<std::vector<std::uint16_t>, std::vector<std::uint16_t>, int>> { };
 
 TEST_P(ArbitraryPrecisionIntComparisonTestFixture, CompareReturnsCorrectResult)
 {
@@ -122,30 +154,35 @@ INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntComparisonTest,
     ArbitraryPrecisionIntComparisonTestFixture,
     ::testing::Values(
         // clang-format off
-        std::make_tuple(std::vector<std::uint8_t> { }, std::vector<std::uint8_t> { }, 0),
-        std::make_tuple(std::vector<std::uint8_t> { 0u }, std::vector<std::uint8_t> { 0u }, 0),
-        std::make_tuple(std::vector<std::uint8_t> { 0u }, std::vector<std::uint8_t> { 1u }, -1),
-        std::make_tuple(std::vector<std::uint8_t> { 1u }, std::vector<std::uint8_t> { 0u }, 1),
-        std::make_tuple(std::vector<std::uint8_t> { 255u }, std::vector<std::uint8_t> { 255u }, 0),
-        std::make_tuple(std::vector<std::uint8_t> { 254u }, std::vector<std::uint8_t> { 255u }, -1),
-        std::make_tuple(std::vector<std::uint8_t> { 255u }, std::vector<std::uint8_t> { 254u }, 1),
-        std::make_tuple(std::vector<std::uint8_t> { 1u, 1u }, std::vector<std::uint8_t> { 0u }, 1),
-        std::make_tuple(std::vector<std::uint8_t> { 0u }, std::vector<std::uint8_t> { 1u, 1u }, -1),
-        std::make_tuple(std::vector<std::uint8_t> { 1u, 1u }, std::vector<std::uint8_t> { 1u, 1u }, 0),
-        std::make_tuple(std::vector<std::uint8_t> { 1u }, std::vector<std::uint8_t> { 1u, 0u }, 0),
-        std::make_tuple(std::vector<std::uint8_t> { 1u, 100u }, std::vector<std::uint8_t> { 1u, 100u }, 0),
-        std::make_tuple(std::vector<std::uint8_t> { 0u, 100u }, std::vector<std::uint8_t> { 99u }, 1),
-        std::make_tuple(std::vector<std::uint8_t> { 99u }, std::vector<std::uint8_t> { 0u, 100u }, -1),
-        std::make_tuple(std::vector<std::uint8_t> { 100u, 0u }, std::vector<std::uint8_t> { 99u }, 1),
-        std::make_tuple(std::vector<std::uint8_t> { 99u }, std::vector<std::uint8_t> { 100u, 0u }, -1),
-        std::make_tuple(std::vector<std::uint8_t> { 100u }, std::vector<std::uint8_t> { 99u, 0u }, 1),
-        std::make_tuple(std::vector<std::uint8_t> { 99u, 0u }, std::vector<std::uint8_t> { 100u }, -1)
+        std::make_tuple(std::vector<std::uint16_t> { }, std::vector<std::uint16_t> { }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 0u }, std::vector<std::uint16_t> { 0u }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 0u }, std::vector<std::uint16_t> { 1u }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { 1u }, std::vector<std::uint16_t> { 0u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 255u }, std::vector<std::uint16_t> { 255u }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 254u }, std::vector<std::uint16_t> { 255u }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { 255u }, std::vector<std::uint16_t> { 254u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() }, std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() -1 }, std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() }, std::vector<std::uint16_t> { std::numeric_limits<std::uint16_t>::max() - 1 }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 0u, 1u }, std::vector<std::uint16_t> { 0u, 1u }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 0u, 1u }, std::vector<std::uint16_t> { 0u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 0u }, std::vector<std::uint16_t> { 0u, 1u }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { 1u, 1u }, std::vector<std::uint16_t> { 0u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 0u }, std::vector<std::uint16_t> { 1u, 1u }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { 1u, 1u }, std::vector<std::uint16_t> { 1u, 1u }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 1u }, std::vector<std::uint16_t> { 1u, 0u }, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 1u, 100u }, std::vector<std::uint16_t> { 1u, 100u}, 0),
+        std::make_tuple(std::vector<std::uint16_t> { 0u, 100u }, std::vector<std::uint16_t> { 99u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 99u }, std::vector<std::uint16_t> { 0u, 100u }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { 100u, 0u }, std::vector<std::uint16_t> { 99u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 99u }, std::vector<std::uint16_t> { 100u, 0u }, -1),
+        std::make_tuple(std::vector<std::uint16_t> { 100u }, std::vector<std::uint16_t> { 99u, 0u }, 1),
+        std::make_tuple(std::vector<std::uint16_t> { 99u, 0u }, std::vector<std::uint16_t> { 100u }, -1)
         // clang-format on
         ));
 
 TEST(ArbitraryPrecisionIntegerToIntTest, MaxValue)
 {
-    api::API api { std::vector<std::uint8_t> { 1, 255, 255, 255, 255, 255, 255, 255, 255 } };
-
+    api::API api { std::vector<std::uint16_t> { 1, 255, 255, 255, 255, 255, 255, 255, 255 } };
     ASSERT_EQ(api::to_uint64(api), std::numeric_limits<std::uint64_t>::max());
 }

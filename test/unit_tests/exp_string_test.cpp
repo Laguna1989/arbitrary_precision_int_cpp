@@ -4,7 +4,7 @@
 #include <string>
 
 class ArbitraryPrecisionIntExpStringTestFixture
-    : public ::testing::TestWithParam<std::tuple<std::vector<std::uint8_t>, std::string>> { };
+    : public ::testing::TestWithParam<std::tuple<std::vector<std::uint16_t>, std::string>> { };
 
 TEST_P(ArbitraryPrecisionIntExpStringTestFixture, IsEqual)
 {
@@ -18,13 +18,13 @@ INSTANTIATE_TEST_SUITE_P(ArbitraryPrecisionIntExpStringTest,
     ArbitraryPrecisionIntExpStringTestFixture,
     ::testing::Values(
         // clang-format off
-        std::make_tuple(std::vector<std::uint8_t>{}, "0"),
-        std::make_tuple(std::vector<std::uint8_t>{1}, "1"),
-        std::make_tuple(std::vector<std::uint8_t>{9}, "9"),
-        std::make_tuple(std::vector<std::uint8_t>{10}, "10"),
-        std::make_tuple(std::vector<std::uint8_t>{11}, "11"),
-        std::make_tuple(std::vector<std::uint8_t>{99}, "99"),
-        std::make_tuple(std::vector<std::uint8_t>{100}, "100"),
+        std::make_tuple(std::vector<std::uint16_t>{}, "0"),
+        std::make_tuple(std::vector<std::uint16_t>{1}, "1"),
+        std::make_tuple(std::vector<std::uint16_t>{9}, "9"),
+        std::make_tuple(std::vector<std::uint16_t>{10}, "10"),
+        std::make_tuple(std::vector<std::uint16_t>{11}, "11"),
+        std::make_tuple(std::vector<std::uint16_t>{99}, "99"),
+        std::make_tuple(std::vector<std::uint16_t>{100}, "100"),
         std::make_tuple(api::from_uint64(999).get_data(), "999"),
         std::make_tuple(api::from_uint64(1000).get_data(), "1.00e3"),
         std::make_tuple(api::from_uint64(1001).get_data(), "1.00e3"),
